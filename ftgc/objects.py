@@ -18,24 +18,24 @@ def getDateStatus(status):
     """
     Retuns a string given the FT2 status
     """
-    return {
-        0: 'NullDate',
-        1: 'Inapplicable',
-        2: 'Unknown',
-        3: 'Approximate',
-        4: 'Known',
-    }[status]
+    return (
+        'NullDate',
+        'Inapplicable',
+        'Unknown',
+        'Approximate',
+        'Known',
+    )[status]
 
 
 def getGender(gender):
     """
     Retuns a string given the FT2 status
     """
-    return {
-        0: '',
-        1: 'Male',
-        2: 'Female',
-    }[gender]
+    return (
+        '',
+        'Male',
+        'Female',
+    )[gender]
 
 
 def bytesToString(in_bytes):
@@ -117,6 +117,15 @@ class Marriage(IndexedObject):
                 notes += 'End Date: ' + getDate(attr[7:]) + '\n'
         self.notes = notes
 
+    def __getitem__(self, index):
+        return (
+            self.marriage,
+            self.husband,
+            self.wife,
+            self.date,
+            self.notes,
+        )[index]
+
 
 class Person(IndexedObject):
     """
@@ -178,6 +187,20 @@ class Person(IndexedObject):
         # @todo: Add Date status details
         self.note = bytesToString(attr[12])
 
+    def __getitem__(self, index):
+        return (
+            self.person,
+            self.firstname,
+            self.lastname,
+            self.gender,
+            self.birthplace,
+            self.deathplace,
+            self.birthdate,
+            self.deathdate,
+            self.note
+        )[index]
+
+
 class Family():
     """
     Gramps CSV Family object.
@@ -190,3 +213,9 @@ class Family():
     def __init__(self, family, child):
         self.family = family
         self.child = child
+
+    def __getitem__(self, index):
+        return (
+            self.family,
+            self.child
+        )[index]

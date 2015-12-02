@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """SoftDisk Family Tree to Gramps CSV"""
-DEBUG = True
+DEBUG = False
 import sys
 
 from struct import iter_unpack
