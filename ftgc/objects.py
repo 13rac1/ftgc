@@ -107,7 +107,7 @@ class Marriage(IndexedObject):
         self.wife = attr[1]
 
         self.date = ""
-        if attr[2] is not DATE_STATUS_NULL:
+        if attr[2] not in (DATE_STATUS_NULL, DATE_STATUS_KNOWN):
             self.date = getDate(attr[3:6])
             notes += 'Start Date Status: ' + getDateStatus(attr[2]) + '\\n'
 
@@ -171,6 +171,9 @@ class Person(IndexedObject):
     def __init__(self, attr):
         self.person = self.getIndex()
 
+        # Some data cannot be converted to Gramps CSV, put in the notes field
+        notes = ""
+
         name = bytesToString(attr[0])
 
         # It's far too complex to figure out every edge case, here is a couple
@@ -197,11 +200,19 @@ class Person(IndexedObject):
 
         self.birthplace = bytesToString(attr[4])
         self.deathplace = bytesToString(attr[5])
-        # @todo: Add Date status details attr[6], attr[10]
+        # Show date status if not null or simply known
+        if attr[6] not in (DATE_STATUS_NULL, DATE_STATUS_KNOWN):
+            notes += 'Birth Date Status: ' + getDateStatus(attr[6]) + '\\n'
+        if attr[10] not in (DATE_STATUS_NULL, DATE_STATUS_KNOWN):
+            notes += 'Death Date Status: ' + getDateStatus(attr[10]) + '\\n'
         self.birthdate = getDate(attr[7:10])
         self.deathdate = getDate(attr[11:14])
 
         self.note = bytesToString(attr[14])
+        if notes:
+            if self.note:
+                self.note += '\\n'
+            self.note += notes
 
     def csvHeader():
         return ('Person', 'Firstname', 'Lastname', 'Gender', 'Birthplace',
