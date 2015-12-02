@@ -46,9 +46,7 @@ def bytesToString(in_bytes):
         return ''
 
     string = in_bytes.decode(encoding='ascii')
-    # Clean up capitalization and trim
-    # @todo: Optional?
-    return string.title().strip()
+    return string.strip()
 
 
 class IndexedObject:
@@ -101,7 +99,7 @@ class Marriage(IndexedObject):
         self.marriage = self.getIndex()
 
         # Some data cannot be converted to Gramps CSV, put in the notes field
-        notes = ""
+        notes = []
 
         self.husband = attr[0]
         self.wife = attr[1]
@@ -109,16 +107,16 @@ class Marriage(IndexedObject):
         self.date = ""
         if attr[2] not in (DATE_STATUS_NULL, DATE_STATUS_KNOWN):
             self.date = getDate(attr[3:6])
-            notes += 'Start Date Status: ' + getDateStatus(attr[2]) + '\\n'
+            notes.append('Start Date Status: ' + getDateStatus(attr[2]) + '.')
 
         # FT2 has an "EndingDate" field, but Gramps CSV doesn't. If there is
         # any date information put it in the notes field.
         if attr[6] is not DATE_STATUS_NULL:
-            notes += 'End Date Status: ' + getDateStatus(attr[6]) + '\\n'
+            notes.append('End Date Status: ' + getDateStatus(attr[6]) + '.')
             # Only show the date if it's useful.
             if attr[6] in (DATE_STATUS_APROXIMATE, DATE_STATUS_KNOWN):
-                notes += 'End Date: ' + getDate(attr[7:]) + '\\n'
-        self.notes = notes
+                notes.append('End Date: ' + getDate(attr[7:]) + '.')
+        self.notes = ' '.join(notes)
 
     def csvHeader():
         return ('Marriage', 'Husband', 'Wife', 'Date', 'Notes')
@@ -172,9 +170,9 @@ class Person(IndexedObject):
         self.person = self.getIndex()
 
         # Some data cannot be converted to Gramps CSV, put in the notes field
-        notes = ""
+        notes = []
 
-        name = bytesToString(attr[0])
+        name = bytesToString(attr[0]).title()
 
         # It's far too complex to figure out every edge case, here is a couple
         # important ones.
@@ -198,21 +196,21 @@ class Person(IndexedObject):
         self.mom_id = attr[2]
         self.dad_id = attr[3]
 
-        self.birthplace = bytesToString(attr[4])
-        self.deathplace = bytesToString(attr[5])
-        # Show date status if not null or simply known
-        if attr[6] not in (DATE_STATUS_NULL, DATE_STATUS_KNOWN):
-            notes += 'Birth Date Status: ' + getDateStatus(attr[6]) + '\\n'
-        if attr[10] not in (DATE_STATUS_NULL, DATE_STATUS_KNOWN):
-            notes += 'Death Date Status: ' + getDateStatus(attr[10]) + '\\n'
+        self.birthplace = bytesToString(attr[4]).title()
+        self.deathplace = bytesToString(attr[5]).title()
         self.birthdate = getDate(attr[7:10])
         self.deathdate = getDate(attr[11:14])
 
-        self.note = bytesToString(attr[14])
-        if notes:
-            if self.note:
-                self.note += '\\n'
-            self.note += notes
+        ftnote = bytesToString(attr[14])
+        if ftnote:
+            notes.append(ftnote)
+
+        # Show date status if not null or simply known
+        if attr[6] not in (DATE_STATUS_NULL, DATE_STATUS_KNOWN):
+            notes.append('Birth Date Status: ' + getDateStatus(attr[6]) + '.')
+        if attr[10] not in (DATE_STATUS_NULL, DATE_STATUS_KNOWN):
+            notes.append('Death Date Status: ' + getDateStatus(attr[10]) + '.')
+        self.note = ' '.join(notes)
 
     def csvHeader():
         return ('Person', 'Firstname', 'Lastname', 'Gender', 'Birthplace',
