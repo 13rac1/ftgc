@@ -32,9 +32,15 @@ It was time to dispose of my parent's old computers. In the process, I found my
 mom's genealogy database on a 1.3GB Maxtor 71336A (manufactured 06-06-96) hard
 disk. There wasn't a way to export the data, so I wrote one.
 
+### Thanks
+Thanks to the Archive Team for creating the [Just Solve the File Format
+Problem!](http://justsolve.archiveteam.org/) website. Special thanks to Dan
+Tobias for writing up the structure of these files: http://justsolve.archiveteam.org/wiki/Softdisk_Family_Tree
+
 ### Todo
 
 * Family Tree version 1 and 3 support.
 * Input file error checking.
 * Additional export formats.
 * Handle NAME.BIO Biography directory, filename: TREE{person id number}.BIO
+* Handle Person name suffixes.
