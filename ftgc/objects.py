@@ -173,12 +173,21 @@ class Person(IndexedObject):
 
         name = bytesToString(attr[0])
 
-        # It's far too complex to figure out every edge case.
-        names = name.split(maxsplit=1)
-        self.firstname = names[0]
-        self.lastname = ''
-        if len(names) > 1:
+        # It's far too complex to figure out every edge case, here is a couple
+        # important ones.
+        # @todo: Name Suffix? I, II, III, Jr should be straightforward
+        names = name.split(maxsplit=2)
+        if len(names) is 1:
+            # No last name
+            self.firstname = names[0]
+            self.lastname = ''
+        elif len(names) is 2:
+            self.firstname = names[0]
             self.lastname = names[1]
+        elif len(names) is 3:
+            # Three names, assume second is middle
+            self.firstname = names[0] + ' ' + names[1]
+            self.lastname = names[2]
 
         # All fields go by Gramps names
         self.gender = getGender(attr[1])
