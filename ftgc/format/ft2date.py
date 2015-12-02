@@ -2,7 +2,8 @@
 
 fmt = ''
 # Date = RECORD
-#     status : StatusType 1 byte (NullDate, Inapplicable, Unknown, Approximate, Known)
+#     status : StatusType 1 byte
+# (NullDate, Inapplicable, Unknown, Approximate, Known)
 fmt += 'b'
 #     month  : 0..12 1 byte
 fmt += 'b'
