@@ -1,8 +1,13 @@
 #!/usr/bin/python3
-"""SoftDisk Family Tree to Gramps CSV"""
+"""
+SoftDisk Family Tree to Gramps CSV
+2015 Brad Erickson (eosrei)
+Licensed GPLv3
+"""
 DEBUG = False
 import sys
 import csv
+import argparse
 
 from struct import iter_unpack
 from ftgc.format import ft2person, ft2marriage
@@ -13,16 +18,32 @@ if sys.version_info < (3, 4):
     print('ERROR: this script requires Python 3.4 or greater.')
     sys.exit(1)
 
+desc="""
+Import Softdisk Family Tree version 2 (Enhanced Family Tree) genealogy
+database files. Output a CSV file formatted for the Gramps genealogy software
+CSV Import format.
+"""
+
+parser = argparse.ArgumentParser(description=desc)
+
+parser.add_argument('FTD', help='Input: A Family Tree 2 FTD Person file')
+parser.add_argument('FTM', help='Input: A Family Tree 2 FTM Marriage file')
+parser.add_argument('CSV', help='Output: A CSV formatted for Gramps')
+
+args = parser.parse_args()
+
+# @todo: File exists error checking.
+
 marriages = []
 # Read marriages
-ftbuffer = open("test/ft2/SAMPLE.FTM", "rb").read()
+ftbuffer = open(args.FTM, "rb").read()
 for row in iter_unpack(ft2marriage.fmt, ftbuffer):
     marriage = Marriage(row)
     marriages.append(marriage)
 
 people = []
 # Read People
-ftbuffer = open("test/ft2/SAMPLE.FTD", "rb").read()
+ftbuffer = open(args.FTD, "rb").read()
 
 first = True
 for row in iter_unpack(ft2person.fmt, ftbuffer):
@@ -55,7 +76,7 @@ for person in people:
                     people[mom-1].firstname, people[mom-1].lastname))
 
 # Write out the CSV!
-with open('SAMPLE.csv', 'w', newline='') as f:
+with open(args.CSV, 'w', newline='') as f:
     writer = csv.writer(f)
     writer.writerow(Person.csvHeader())
     # csv.writer.writerow() does not accept generator (must be coerced to list)
