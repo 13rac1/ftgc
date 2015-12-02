@@ -1,0 +1,21 @@
+Person,Firstname,Lastname,Gender,Birthplace,Deathplace,Birthdate,Deathdate,Note
+1,Carol,Brady,Female,,,1/1/1940,,"a lovely lady; always said ""Don't play ball in the house."""
+2,Mike,Brady,Male,,,1/1/1940,,was once living with three boys of his own
+3,Greg,Brady,Male,,,1/1/1958,,was one of the four men living all together who were all alone
+4,Jan,Brady,Female,,,1/1/1960,,had hair of gold (like her mother)
+5,Marcia,Brady,Female,,,1/1/1958,,was allergic to Tiger's flea powder
+6,Peter,Brady,Male,,,1/1/1960,,"allergic to strawberries.  Famous Line: ""pork chops & applesauce"""
+7,Bobby,Brady,Male,,,1/1/1962,,
+8,Cindy,Brady,Female,,,1/1/1962,,"had hair of gold like her mother, in curls"
+9,Alice,,Female,,,1/1/1933,,added to cast at last minute to fill center square
+
+Marriage,Husband,Wife,Date,Notes
+1,2,1,,End Date Status: Inapplicable.
+
+Family,Child
+1,3
+1,4
+1,5
+1,6
+1,7
+1,8
