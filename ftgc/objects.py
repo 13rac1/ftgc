@@ -39,7 +39,7 @@ def getGender(gender):
 
 
 def bytesToString(in_bytes):
-    if type(in_bytes) != bytes:
+    if type(in_bytes) is not bytes:
         return ''
 
     string = in_bytes.decode(encoding='ascii')
@@ -52,8 +52,8 @@ class IndexedObject:
     """
     Base class with index counter static variable and getter.
     """
-    # -1 to start at zero
-    index = -1
+    # 0 to start at one
+    index = 0
 
     @classmethod
     def getIndex(cls):
@@ -104,13 +104,13 @@ class Marriage(IndexedObject):
         self.wife = attr[1]
 
         self.date = ""
-        if attr[2] != DATE_STATUS_NULL:
+        if attr[2] is not DATE_STATUS_NULL:
             self.date = getDate(attr[3:6])
             notes += 'Start Date Status: ' + getDateStatus(attr[2]) + '\n'
 
         # FT2 has an "EndingDate" field, but Gramps CSV doesn't. If there is
         # any date information put it in the notes field.
-        if attr[6] != DATE_STATUS_NULL:
+        if attr[6] is not DATE_STATUS_NULL:
             notes += 'End Date Status: ' + getDateStatus(attr[6]) + '\n'
             # Only show the date if it's useful.
             if attr[6] in (DATE_STATUS_APROXIMATE, DATE_STATUS_KNOWN):
@@ -159,13 +159,34 @@ class Person(IndexedObject):
         name = bytesToString(attr[0])
 
         # It's far too complex to figure out every edge case.
-        (self.firstname, self.lastname) = name.split(name, maxsplit=1)
+        names = name.split(maxsplit=1)
+        self.firstname = names[0]
+        self.lastname = ''
+        if len(names) > 1:
+            self.lastname = names[1]
+
         # All fields go by Gramps names
         self.gender = getGender(attr[1])
-        # Mom/Dad cannot be put into a Family object until this exists
+        # These ID numbers are used in later processing, not by Gramps
+        self.mom_id = attr[2]
+        self.dad_id = attr[3]
+
         self.birthplace = bytesToString(attr[4])
         self.deathplace = bytesToString(attr[5])
         self.birthdate = getDate(attr[6:9])
         self.deathdate = getDate(attr[9:12])
         # @todo: Add Date status details
         self.note = bytesToString(attr[12])
+
+class Family():
+    """
+    Gramps CSV Family object.
+
+    Fields accepted by Gramps:
+    family - a reference to tie this to a marriage above (required)
+    child - the reference of the person above who is a child
+    """
+
+    def __init__(self, family, child):
+        self.family = family
+        self.child = child
