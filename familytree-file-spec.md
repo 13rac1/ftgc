@@ -15,7 +15,7 @@ The .FPD (person) file was a set of binary records, stored directly from the Tur
                     mom, dad: integer;
                     marriages: MarriageList;
                     kids: ChildList;
-                    comments: ^TextLine;
+                    comments: TextLine;
                  END;
 
 with these data type definitions:

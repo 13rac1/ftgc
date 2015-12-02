@@ -27,6 +27,27 @@ def getDateStatus(status):
     }[status]
 
 
+def getGender(gender):
+    """
+    Retuns a string given the FT2 status
+    """
+    return {
+        0: '',
+        1: 'Male',
+        2: 'Female',
+    }[gender]
+
+
+def bytesToString(in_bytes):
+    if type(in_bytes) != bytes:
+        return ''
+
+    string = in_bytes.decode(encoding='ascii')
+    # Clean up capitalization and trim
+    # @todo: Optional?
+    return string.title().strip()
+
+
 class IndexedObject:
     """
     Base class with index counter static variable and getter.
@@ -58,9 +79,6 @@ class Marriage(IndexedObject):
                           (for male parent2, you'll need to put gender in the
                           person area, or edit it later in gramps)
     date - the date of the marriage
-    place - the place of the marriage
-    placeid - the place id of the marriage
-    source - source title of the marriage
     note - a note about the marriage/wedding
 
     Fields provided by FT2:
@@ -98,3 +116,56 @@ class Marriage(IndexedObject):
             if attr[6] in (DATE_STATUS_APROXIMATE, DATE_STATUS_KNOWN):
                 notes += 'End Date: ' + getDate(attr[7:]) + '\n'
         self.notes = notes
+
+
+class Person(IndexedObject):
+    """
+    Gramps CSV Person object.
+
+    Fields accepted by Gramps:
+    person -  a reference to be used for families (marriages, and children)
+    firstname - a person's first name
+    surname/lastname - a person's last name
+    gender - male or female (you should use the translation for your language)
+    note - a note for the person's record
+    birthdate - date of birth
+    birthplace - place of birth
+    deathdate - date of death
+    deathplace - place of death
+
+    Fields provided by FT2:
+    Person = RECORD
+        name         : NameLine; 31 chars
+        sex          : (Null, Male, Female);
+        mom, dad     : integer; (one-indexed since the header is skipped)
+        BirthPlace,
+        DeathPlace   : NameLine; 31 chars
+        BirthDate,
+        DeathDate    : date;
+        comments     : CommentLine; 66 chars
+        Biography    : boolean;
+    END;
+    Date = RECORD
+        status : (NullDate, Inapplicable, Unknown, Approximate, Known)
+        month  : 0..12;
+        day    : 0..31;
+        year   : INTEGER
+    END;
+    """
+
+    def __init__(self, attr):
+        self.person = self.getIndex()
+
+        name = bytesToString(attr[0])
+
+        # It's far too complex to figure out every edge case.
+        (self.firstname, self.lastname) = name.split(name, maxsplit=1)
+        # All fields go by Gramps names
+        self.gender = getGender(attr[1])
+        # Mom/Dad cannot be put into a Family object until this exists
+        self.birthplace = bytesToString(attr[4])
+        self.deathplace = bytesToString(attr[5])
+        self.birthdate = getDate(attr[6:9])
+        self.deathdate = getDate(attr[9:12])
+        # @todo: Add Date status details
+        self.note = bytesToString(attr[12])
