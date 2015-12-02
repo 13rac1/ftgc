@@ -11,6 +11,9 @@ def getDate(ftdate):
     """
     # Parse FT2 Date objects and return useable strings 1/1/1970
     """
+    if sum(ftdate) is 0:
+        # Do not output an empty 0/0/0 date.
+        return ''
     return '{0}/{1}/{2}'.format(ftdate[0], ftdate[1], ftdate[2])
 
 
@@ -192,7 +195,7 @@ class Person(IndexedObject):
         self.note = bytesToString(attr[14])
 
     def csvHeader():
-        return ('Person', 'Firsname', 'Lastname', 'Gender', 'Birthplace',
+        return ('Person', 'Firstname', 'Lastname', 'Gender', 'Birthplace',
                 'Deathplace', 'Birthdate', 'Deathdate', 'Note')
 
     def __getitem__(self, index):
