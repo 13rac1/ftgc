@@ -35,3 +35,6 @@ disk. There wasn't a way to export the data, so I wrote one.
 ### Todo
 
 * Family Tree version 1 and 3 support.
+* Input file error checking.
+* Additional export formats.
+* Handle NAME.BIO Biography directory, filename: TREE{person id number}.BIO

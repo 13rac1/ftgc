@@ -27,7 +27,70 @@ def getDateStatus(status):
     }[status]
 
 
-class Marriage:
+def getPlace(places, place_name):
+    """
+    Searches the list of places for the place name. If it exists, returns the
+    reference. If not, creates it and returns the reference.
+    """
+
+    if not place_name or type(place_name) == int:
+        return ''
+
+    # Bytes to string
+    place_str = place_name.decode(encoding='ascii')
+    # Clean up capitalization and trim
+    # @todo: Optional?
+    place_str = place_str.title().strip()
+
+    # Return the reference/id for a place if it already exists.
+    for existing in places:
+        if existing.title == place_str:
+            return existing.place
+
+    # The place doesn't exist, make it!
+    place = Place(place_str)
+    places.append(place)
+
+    return place.place
+
+
+class IndexedObject:
+    """
+    Base class with index counter static variable and getter.
+    """
+    # -1 to start at zero
+    index = -1
+
+    @classmethod
+    def getIndex(cls):
+        cls.index += 1
+        return cls.index
+
+
+class Place(IndexedObject):
+    """
+    Gramps CSV Place object
+
+    Fields accepted by Gramps:
+    place - a reference to this place
+    title - title of place
+    name - name of place
+    type - type of place (eg, City, County, State, etc.)
+    latitude - latitude of place
+    longitude - longitude of place
+    code - postal code, etc.
+    enclosed_by - the reference to another place that encloses this one
+    date - date that the enclosed_by place was in effect
+    """
+
+    def __init__(self, name):
+        self.place = self.getIndex()
+
+        self.title = name
+        self.name = name
+
+
+class Marriage(IndexedObject):
     """
     Gramps CSV Marriage object.
 
@@ -62,14 +125,6 @@ class Marriage:
         year   : INTEGER
     END;
     """
-
-    # Class variable as a counter, must increment before return so start at -1
-    index = -1
-
-    @classmethod
-    def getIndex(cls):
-        cls.index += 1
-        return cls.index
 
     def __init__(self, attr):
         self.marriage = self.getIndex()
