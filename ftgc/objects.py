@@ -11,7 +11,7 @@ def getDate(ftdate):
     """
     # Parse FT2 Date objects and return useable strings 1/1/1970
     """
-    return '{}/{}/{}'.format(ftdate[0], ftdate[1], ftdate[2])
+    return '{0}/{1}/{2}'.format(ftdate[0], ftdate[1], ftdate[2])
 
 
 def getDateStatus(status):
@@ -106,16 +106,19 @@ class Marriage(IndexedObject):
         self.date = ""
         if attr[2] is not DATE_STATUS_NULL:
             self.date = getDate(attr[3:6])
-            notes += 'Start Date Status: ' + getDateStatus(attr[2]) + '\n'
+            notes += 'Start Date Status: ' + getDateStatus(attr[2]) + '\\n'
 
         # FT2 has an "EndingDate" field, but Gramps CSV doesn't. If there is
         # any date information put it in the notes field.
         if attr[6] is not DATE_STATUS_NULL:
-            notes += 'End Date Status: ' + getDateStatus(attr[6]) + '\n'
+            notes += 'End Date Status: ' + getDateStatus(attr[6]) + '\\n'
             # Only show the date if it's useful.
             if attr[6] in (DATE_STATUS_APROXIMATE, DATE_STATUS_KNOWN):
-                notes += 'End Date: ' + getDate(attr[7:]) + '\n'
+                notes += 'End Date: ' + getDate(attr[7:]) + '\\n'
         self.notes = notes
+
+    def csvHeader():
+        return ('Marriage', 'Husband', 'Wife', 'Date', 'Notes')
 
     def __getitem__(self, index):
         return (
@@ -182,10 +185,15 @@ class Person(IndexedObject):
 
         self.birthplace = bytesToString(attr[4])
         self.deathplace = bytesToString(attr[5])
-        self.birthdate = getDate(attr[6:9])
-        self.deathdate = getDate(attr[9:12])
-        # @todo: Add Date status details
-        self.note = bytesToString(attr[12])
+        # @todo: Add Date status details attr[6], attr[10]
+        self.birthdate = getDate(attr[7:10])
+        self.deathdate = getDate(attr[11:14])
+
+        self.note = bytesToString(attr[14])
+
+    def csvHeader():
+        return ('Person', 'Firsname', 'Lastname', 'Gender', 'Birthplace',
+                'Deathplace', 'Birthdate', 'Deathdate', 'Note')
 
     def __getitem__(self, index):
         return (
@@ -213,6 +221,9 @@ class Family():
     def __init__(self, family, child):
         self.family = family
         self.child = child
+
+    def csvHeader():
+        return ('Family', 'Child')
 
     def __getitem__(self, index):
         return (

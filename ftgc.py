@@ -2,6 +2,7 @@
 """SoftDisk Family Tree to Gramps CSV"""
 DEBUG = False
 import sys
+import csv
 
 from struct import iter_unpack
 from ftgc.format import ft2person, ft2marriage
@@ -52,3 +53,17 @@ for person in people:
                     person.firstname, person.lastname,
                     people[dad-1].firstname, people[dad-1].lastname,
                     people[mom-1].firstname, people[mom-1].lastname))
+
+# Write out the CSV!
+with open('SAMPLE.csv', 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerow(Person.csvHeader())
+    # csv.writer.writerow() does not accept generator (must be coerced to list)
+    # http://bugs.python.org/issue23171
+    writer.writerows(list(p) for p in people)
+    writer.writerow('')
+    writer.writerow(Marriage.csvHeader())
+    writer.writerows(list(m) for m in marriages)
+    writer.writerow('')
+    writer.writerow(Family.csvHeader())
+    writer.writerows(list(f) for f in families)
